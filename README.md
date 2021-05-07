@@ -6,11 +6,15 @@ Further read at https://blog.gruntwork.io/an-introduction-to-terraform-f17df9c6d
 
 # Preparations
 
-Make sure docker and `awscli` is installed and there is an aws account that is able to create EC2 instances.
+Make sure docker and `awscli` is installed and there is an aws account that is able to create EC2 instances (policy `AmazonEC2FullAccess` will do the trick).
+This project assumes that you have `~/.aws/credentials` in place with a single account. If you have more accounts in `credentials`, the env variable substitution will fail.
+
 
 ## Running
 
 ```
+cd terraform-aws-playground
+
 # have terraform download providers, e.g. the one for AWS access
 docker run -i -t -v $PWD:$PWD -w $PWD hashicorp/terraform:light init -input=false
 
