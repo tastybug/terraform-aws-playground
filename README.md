@@ -14,42 +14,47 @@ This project assumes that you have `~/.aws/credentials` in place with a single a
 
 ```
 cd terraform-aws-playground
+export AWS_ACCESS_KEY_ID=$(cat ~/.aws/credentials | grep "^aws_access.*" | sed 's/[\na-z_ =]*//')
+export AWS_SECRET_ACCESS_KEY=$(cat ~/.aws/credentials | grep "^aws_secret.*" | sed 's/[\na-z_ =]*//')
+export AWS_DEFAULT_REGION="us-east-1"
 
 # have terraform download providers, e.g. the one for AWS access
-docker run -i -t -v $PWD:$PWD -w $PWD hashicorp/terraform:light init -input=false
+docker run -i -t \
+-v $PWD:$PWD \
+-w $PWD \
+hashicorp/terraform:light init -input=false
 
 # see what the change will bring
 docker run -i -t \
 -v $PWD:$PWD \
 -w $PWD \
---env AWS_ACCESS_KEY_ID=$(cat ~/.aws/credentials | grep "^aws_access.*" | sed 's/[\na-z_ =]*//') \
---env AWS_SECRET_ACCESS_KEY=$(cat ~/.aws/credentials | grep "^aws_secret.*" | sed 's/[\na-z_ =]*//') \
---env AWS_DEFAULT_REGION="us-east-1" \
+--env AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID \
+--env AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY \
+--env AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION \
 hashicorp/terraform:light plan
 
 # apply the changes
 docker run -i -t \
 -v $PWD:$PWD \
 -w $PWD \
---env AWS_ACCESS_KEY_ID=$(cat ~/.aws/credentials | grep "^aws_access.*" | sed 's/[\na-z_ =]*//') \
---env AWS_SECRET_ACCESS_KEY=$(cat ~/.aws/credentials | grep "^aws_secret.*" | sed 's/[\na-z_ =]*//') \
+--env AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID \
+--env AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY \
 hashicorp/terraform:light apply
 
 # verify with awscli (make sure to point to the right region here)
-export AWS_DEFAULT_REGION="us-east-1"
 aws ec2 describe-instances | jq ".Reservations[].Instances[].State" 
 
 # remove everything
 docker run -i -t \
 -v $PWD:$PWD \
 -w $PWD \
---env AWS_ACCESS_KEY_ID=$(cat ~/.aws/credentials | grep "^aws_access.*" | sed 's/[\na-z_ =]*//') \
---env AWS_SECRET_ACCESS_KEY=$(cat ~/.aws/credentials | grep "^aws_secret.*" | sed 's/[\na-z_ =]*//') \
+--env AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID \
+--env AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY \
 hashicorp/terraform:light destroy
-
-# remove local TF cache
-git clean -f -d
 
 # make sure everything is cleaned up again
 aws ec2 describe-instances | jq ".Reservations[].Instances[].State" 
+
+# remove local TF cache
+git clean -f -d
 ```
