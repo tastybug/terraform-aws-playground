@@ -47,6 +47,9 @@ docker run -i -t \
 --env AWS_SECRET_ACCESS_KEY=$(cat ~/.aws/credentials | grep "^aws_secret.*" | sed 's/[\na-z_ =]*//') \
 hashicorp/terraform:light destroy
 
+# remove local TF cache
+git clean -f -d
+
 # make sure everything is cleaned up again
 aws ec2 describe-instances | jq ".Reservations[].Instances[].State" 
 ```
