@@ -1,5 +1,6 @@
 
-# list of AMIs under https://console.aws.amazon.com/ec2/v2/home?region=us-east-1#LaunchInstanceWizard:
+variable "instance-name" {}
+
 
 data "aws_ami" "ubuntu" {
   most_recent = true
@@ -17,16 +18,16 @@ data "aws_ami" "ubuntu" {
   owners = ["099720109477"] # Canonical
 }
 
-resource "aws_instance" "first_ec2" {
+resource "aws_instance" "ec2-instance" {
   ami           = data.aws_ami.ubuntu.id
   instance_type = "t2.micro"
 
   tags = {
-    Name = "Nice EC2 instance you got there"
+    Name = var.instance-name
   }
 }
 
 output "public_ip" {
-  value       = aws_instance.first_ec2.public_ip
-  description = "The public IP assigned to the instance."
+  value       = aws_instance.ec2-instance.public_ip
+  description = "The public IP assigned to the instance"
 }

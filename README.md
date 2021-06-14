@@ -19,13 +19,13 @@ export AWS_SECRET_ACCESS_KEY=$(cat ~/.aws/credentials | grep "^aws_secret.*" | s
 export AWS_DEFAULT_REGION="us-east-1"
 
 # have terraform download providers, e.g. the one for AWS access
-docker run -i -t \
+docker run --rm -i -t \
 -v $PWD:$PWD \
 -w $PWD \
 hashicorp/terraform:light init -input=false
 
 # see what the change will bring
-docker run -i -t \
+docker run --rm -i -t \
 -v $PWD:$PWD \
 -w $PWD \
 --env AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID \
@@ -34,7 +34,7 @@ docker run -i -t \
 hashicorp/terraform:light plan
 
 # apply the changes
-docker run -i -t \
+docker run --rm -i -t \
 -v $PWD:$PWD \
 -w $PWD \
 --env AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID \
@@ -45,7 +45,7 @@ hashicorp/terraform:light apply
 aws ec2 describe-instances | jq ".Reservations[].Instances[].State" 
 
 # remove everything
-docker run -i -t \
+docker run --rm -i -t \
 -v $PWD:$PWD \
 -w $PWD \
 --env AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID \
