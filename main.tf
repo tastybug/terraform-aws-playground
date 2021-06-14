@@ -2,14 +2,6 @@ provider "aws" {
   region = "us-east-1"
 }
 
-# module "one" {
-#   source = "./modules/module_one"
-# }
-
-# module "two" {
-#   source = "./modules/module_two"
-# }
-
 module "ec2" {
   source = "./modules/ec2"
 
